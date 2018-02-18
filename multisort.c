@@ -4,62 +4,55 @@
 int sum; /* this data is shared by the thread(s) */
 void *sorter(void *param); /* threads call this function */
 
-int array[10] = {99,98,9,8,7,6,5,4,3,2};
+int array[] = {99,98,9,8,7,6,5,4,3,2}; //our target array
 int firstlast[2];
+
+//structure to keep the index of array
+typedef struct 
+{
+	int high;
+	int low;
+}Index;
 
 int main(int argc, char *argv[])
 {
-    pthread_t tid[3]; /* 3 thread identifier */
-    pthread_attr_t attr; /* set of thread attributes */
-
+	Index in;
+	in.low = 0;
+	in.high = 10;
+    pthread_t thread; /* 3 thread identifier */
+    pthread_create(&thread, NULL, sorter, &in) //For last argument pthread_create takes the address of any type
+    pthread_join(thread,NULL);
     
-    /* get the default attributes */
-    pthread_attr_init(&attr);
-    /* create the thread */
-    firstlast[0]= 0;
-    firstlast[1] = 4;
-    pthread_create(&tid[0], &attr, sorter, firstlast);
-    firstlast[0] = 5;
-    firstlast[1] = 9;
-    pthread_create(&tid[1], &attr, sorter, firstlast);
 
     /* wait for the thread to exit */
-    pthread_join(tid,NULL);
+    //pthread_join(tid,NULL);
     printf("sum = %d\n",sum);
 
 }
 /* The thread will begin control in this function */
-void *sorter(int firstlast[])
+void *sorter(void *index_info)
 {
-	int i,j,temp,k;
-	printf("printing the array before sorting\n");
-	for (int i = firstlast[0]; i < firstlast[1]; ++i)
-	{
-		printf("%d",array[i] );
+	Index *ind = (Index *)index_info;
+	int mid = (ind->low + ind->high)/2;
+
+	Index nIndex[2];
+	pthread_t threads[2];
+
+	nIndex[0].low = ind->low;
+	nIndex[0].high = mid;
+
+	nIndex[1].low = mid+1;
+	nIndex[1].high = ind->high;
+
+	if (ind->low < ind->high){
+		pthread_create(&threads[0], NULL, mergesort, &nIndex[0]);
+		pthread_create(&threads[1], NULL, mergesort, &nIndex[1]);
+
+		pthread_join(threads[0], NULL);
+		pthread_join(threads[1], NULL)
+
 	}
-	printf("\n");
-
-    for(i=firstlast[0]; i< firstlast[1]; i++)
-    {
-        for(j= i+1; j<first1ast[1]; j++)
-        {
-
-            if(array[i] > array[j])
-            {
-                temp = array[i];
-                array[i] = array[j];
-                array[j] = temp;
-
-            }
-        }
-    }
-    printf("printing the array after sorting\n", );
-	for (int i = firstlast[0]; i < firstlast[1]; ++i)
-	{
-		printf("%d",array[i] );
-	}
-	printf("\n");
-    //code to sort a array
+	merge(ind->high, ind->low)
 
     pthread_exit(0);
 }
