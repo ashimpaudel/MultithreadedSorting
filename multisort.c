@@ -7,7 +7,7 @@ void *mergeSorter(void *args);
 void mergeSort(int arr[], int l, int r);
 void merge(int arr[], int l, int m, int r);
 
-int sortArray[] = {99,9,97,23,45,32,904,5,66,60}; //our target array
+ = {99,9,97,23,45,32,904,5,66,60}; //our target array
 
 typedef struct{
     int first;
@@ -15,6 +15,28 @@ typedef struct{
 }fLIndices;
 
 int main(int argc, char *argv[]){
+    //reading the input from file line by line, Usage copied from geline man page: 
+    //source: https://linux.die.net/man/3/getline
+    int i;    
+    FILE *fp;
+    char *line = NULL;
+    size_t len = 0;
+    size_t read;
+
+    fp = fopen("test.txt", "r");
+    if (fp == NULL){
+        printf("no data in input file");
+        exit(EXIT_FAILURE);
+
+    while ((read = getline(&line, &len, fp)) != -1){
+        printf("Retrieved line of length %zu :\n", read);
+        printf("%s", line);
+        int sortArray[strlen(line)]
+        
+        //populating the Array to be sorted
+        strcpy(sortArray, line);
+    }
+    free(line);
     
     pthread_t th1, th2; //declaring two threads, later on we pass the index of two halves of array to each of them
     
@@ -38,7 +60,9 @@ int main(int argc, char *argv[]){
     
     (void) pthread_join(th1, NULL);
     (void) pthread_join(th2, NULL);
+
     merge(sortArray,0, middlePoint, (sizeof(sortArray)/sizeof(sortArray[0])) - 1);
+
     for(i=0; i<10;i++)
         printf("%d,",sortArray[i]);
     return 0;
