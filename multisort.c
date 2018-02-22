@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 
-int sum; /* this data is shared by the thread(s) weCreate */
+int sum; /* this data is shared by the thread(s) we create */
 void *sorter(void *param); /* threads call this function */
 void merge(int low, int high);
 
@@ -32,12 +32,19 @@ int main(int argc, char *argv[]){
     args2 -> last = (sizeof(sortArray)/sizeof(sortArray[0])) - 1;
     
     //creating two threads 
-    pthread_create(&th1, NULL, mergeSort, &args1);
-    pthread_create(&th2, NULL, mergeSort, &args2);
+    pthread_create(&th1, NULL, mergeSorter, &args1);
+    pthread_create(&th2, NULL, mergeSorter, &args2);
     
     void pthread_join(th1, NULL);
     void pthread_join(th2, NULL);
     return 0;
 
+}
+
+void *mergeSorter(void *args){
+    int first, last;
+    first = ((fLIndices*)args) -> first;
+    last = ((fLIndices*)args) -> last;
+    mergeSort(arr, first, last);
 }
 
