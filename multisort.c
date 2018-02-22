@@ -29,42 +29,37 @@ int main(int argc, char *argv[]){
     size_t len = 0;
     size_t read;
 
-    fp = fopen("test.txt", "r");
+    fp = fopen(argv[1], "r");
     if (fp == NULL){
         printf("no data in input file");
         exit(EXIT_FAILURE);
     }
     while ((read = getline(&line, &len, fp)) != -1){
-        printf("Retrieved line of length %zu :\n", read);
+        //printf("Retrieved line of length %zu \n", read);
+        printf("printing original array: \n");
         printf("%s", line);
         char *llc = malloc(strlen(line)+1);
         strcpy(llc, line);
-        printf("%s", line);
         
         int arrCount = 0;
         char* pch;
         pch = strtok (line," ");
+
+        //counting the number of integers
         while(pch != NULL){
-        	printf("%s\n",pch );
         	arrCount ++;
         	pch = strtok (NULL, " ");
         }
-
-        printf("%s", llc);
 
         int sortArray[arrCount];
 
         pch = strtok (llc," ");
         arrCount = 0;
         while(pch != NULL){
-        	printf("%s\n",pch );
         	sortArray[arrCount] = atoi(pch);
-        	printf("%d,",sortArray[arrCount]);
         	arrCount ++;
         	pch = strtok (NULL, " ");
         }
-        
-        printf("here is .........................................");
 
         //multithreaded merge sorting of sortArray
         pthread_t th1, th2; //declaring two threads, later on we pass the index of two halves of array to each of them
@@ -72,9 +67,6 @@ int main(int argc, char *argv[]){
         //threads are created by pthread_create function, we need to pass arguements tho this function of type void pointer
         //next step is to create two arguements to pass to each of thread
         
-        for(i=0; i<arrCount;i++)
-            printf("%d,",sortArray[i]);
-        printf("here are...... .........................................");
         fLIndices args1, args2;
         int i,middlePoint;
         
@@ -88,6 +80,18 @@ int main(int argc, char *argv[]){
         args2.last = (sizeof(sortArray)/sizeof(sortArray[0])) - 1;
         args2.arrayPtr = sortArray;
         
+
+        //print the part1 of the array, to be sorted by thread1
+        printf("part 1 of the array: \n");
+        for(i=0; i<middlePoint;i++)
+            printf("%d ",sortArray[i]);
+        printf("\n");
+
+                //print the part1 of the array, to be sorted by thread1
+        printf("part 2 of the array: \n");
+        for(i=middlePoint+1; i<(sizeof(sortArray)/sizeof(sortArray[0]));i++)
+            printf("%d ",sortArray[i]);
+        printf("\n");
         //creating two threads 
         pthread_create(&th1, NULL, mergeSorter, &args1);
         pthread_create(&th2, NULL, mergeSorter, &args2);
@@ -96,9 +100,10 @@ int main(int argc, char *argv[]){
         (void) pthread_join(th2, NULL);
 
         merge(sortArray,0, middlePoint, (sizeof(sortArray)/sizeof(sortArray[0])) - 1);
-
+        printf("sorted Array \n");
         for(i=0; i<(sizeof(sortArray)/sizeof(sortArray[0]));i++)
-            printf("%d,",sortArray[i]);
+            printf("%d ",sortArray[i]);
+        	printf("\n\n");
         
     
     
