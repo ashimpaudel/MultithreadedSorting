@@ -48,3 +48,18 @@ void *mergeSorter(void *args){
     mergeSort(arr, first, last);
 }
 
+void mergeSort(int arr[], int l, int r){
+
+    if(l<r){
+        //same as 1+r/2, but it prevents the overflow when both munbers are large
+        int m = l + (r-l)/2
+        //sorting first and second halves
+        mergeSort(arr, l, m);
+        mergeSort(arr, m+1, r);
+        //merging the first and second halves of the array        
+        merge(arr,l,m,r);    
+    } 
+}
+
+
+
