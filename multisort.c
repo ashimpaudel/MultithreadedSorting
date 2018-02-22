@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 
-int sum; /* this data is shared by the thread(s) we create */
+int sum; /* this data is shared by the thread(s) weCreate */
 void *sorter(void *param); /* threads call this function */
 void merge(int low, int high);
 
