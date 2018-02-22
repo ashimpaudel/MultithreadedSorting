@@ -1,20 +1,25 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 
 
 void *mergeSorter(void *args);
 void mergeSort(int arr[], int l, int r);
 void merge(int arr[], int l, int m, int r);
 
- = {99,9,97,23,45,32,904,5,66,60}; //our target array
 
 typedef struct{
     int first;
     int last;
+    int* arrayPtr;
 }fLIndices;
 
+
+
 int main(int argc, char *argv[]){
+
     //reading the input from file line by line, Usage copied from geline man page: 
     //source: https://linux.die.net/man/3/getline
     int i;    
@@ -27,52 +32,76 @@ int main(int argc, char *argv[]){
     if (fp == NULL){
         printf("no data in input file");
         exit(EXIT_FAILURE);
-
+    }
     while ((read = getline(&line, &len, fp)) != -1){
         printf("Retrieved line of length %zu :\n", read);
         printf("%s", line);
-        int sortArray[strlen(line)]
+        printf("%d\n", (int)strlen(line) );
+        char sortArrayDummy[(int)strlen(line)];
+        int sortArray[((int)strlen(line))/2+1];
         
         //populating the Array to be sorted
-        strcpy(sortArray, line);
-    }
-    free(line);
-    
-    pthread_t th1, th2; //declaring two threads, later on we pass the index of two halves of array to each of them
-    
-    //threads are created by pthread_create function, we need to pass arguements tho this function of type void pointer
-    //next step is to create two arguements to pass to each of thread
-    
-    fLIndices args1, args2;
-    int i,middlePoint;
-    
-    args1.first = 0;
-    //finding the middle point of the array
-    middlePoint = (sizeof(sortArray)/sizeof(sortArray[0]))/2;
-    args1.last = middlePoint;
+        strncpy(sortArrayDummy, line, (int)strlen(line));
 
-    args2.first = middlePoint + 1;
-    args2.last = (sizeof(sortArray)/sizeof(sortArray[0])) - 1;
-    
-    //creating two threads 
-    pthread_create(&th1, NULL, mergeSorter, &args1);
-    pthread_create(&th2, NULL, mergeSorter, &args2);
-    
-    (void) pthread_join(th1, NULL);
-    (void) pthread_join(th2, NULL);
+        for(i = 0; i < (sizeof(sortArrayDummy) / sizeof(sortArrayDummy[0])); i++){
+        	printf("sort arrray dummy %c\n", sortArrayDummy[i] );
+            if (sortArrayDummy[i] != ' ')
+                sortArray[i/2] = (int)sortArrayDummy[i];
+        }
+        printf("here is .........................................");
 
-    merge(sortArray,0, middlePoint, (sizeof(sortArray)/sizeof(sortArray[0])) - 1);
+        //multithreaded merge sorting of sortArray
+        pthread_t th1, th2; //declaring two threads, later on we pass the index of two halves of array to each of them
+    
+        //threads are created by pthread_create function, we need to pass arguements tho this function of type void pointer
+        //next step is to create two arguements to pass to each of thread
+        
+        for(i=0; i<(sizeof(sortArray)/sizeof(sortArray[0]));i++)
+            printf("%d,",sortArray[i]);
+        printf("here are...... .........................................");
+        fLIndices args1, args2;
+        int i,middlePoint;
+        
+        args1.first = 0;
+        //finding the middle point of the array
+        middlePoint = (sizeof(sortArray)/sizeof(sortArray[0]))/2;
+        args1.last = middlePoint;
+        args1.arrayPtr = sortArray;
 
-    for(i=0; i<10;i++)
-        printf("%d,",sortArray[i]);
+        args2.first = middlePoint + 1;
+        args2.last = (sizeof(sortArray)/sizeof(sortArray[0])) - 1;
+        args2.arrayPtr = sortArray;
+        
+        //creating two threads 
+        pthread_create(&th1, NULL, mergeSorter, &args1);
+        pthread_create(&th2, NULL, mergeSorter, &args2);
+        
+        (void) pthread_join(th1, NULL);
+        (void) pthread_join(th2, NULL);
+
+        merge(sortArray,0, middlePoint, (sizeof(sortArray)/sizeof(sortArray[0])) - 1);
+
+        for(i=0; i<(sizeof(sortArray)/sizeof(sortArray[0]));i++)
+            printf("%d,",sortArray[i]);
+        
+    
+    
+}
+	free(line);
+    fclose(fp);
+    
+    
     return 0;
 
 }
 
 void *mergeSorter(void *args){
     int first, last;
+    int* sortArray;
     first = ((fLIndices*)args) -> first;
     last = ((fLIndices*)args) -> last;
+    sortArray = ((fLIndices*)args) -> arrayPtr;
+    
     mergeSort(sortArray, first, last);
 }
 
@@ -130,5 +159,5 @@ void merge(int arr[], int l, int m, int r){
         j++;
         k++;
     }
-  }
+ }
 
