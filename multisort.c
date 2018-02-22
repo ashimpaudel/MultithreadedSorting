@@ -25,6 +25,7 @@ int main(int argc, char *argv[]){
     int i;    
     FILE *fp;
     char *line = NULL;
+    
     size_t len = 0;
     size_t read;
 
@@ -36,18 +37,33 @@ int main(int argc, char *argv[]){
     while ((read = getline(&line, &len, fp)) != -1){
         printf("Retrieved line of length %zu :\n", read);
         printf("%s", line);
-        printf("%d\n", (int)strlen(line) );
-        char sortArrayDummy[(int)strlen(line)];
-        int sortArray[((int)strlen(line))/2+1];
+        char *llc = malloc(strlen(line)+1);
+        strcpy(llc, line);
+        printf("%s", line);
         
-        //populating the Array to be sorted
-        strncpy(sortArrayDummy, line, (int)strlen(line));
-
-        for(i = 0; i < (sizeof(sortArrayDummy) / sizeof(sortArrayDummy[0])); i++){
-        	printf("sort arrray dummy %c\n", sortArrayDummy[i] );
-            if (sortArrayDummy[i] != ' ')
-                sortArray[i/2] = (int)sortArrayDummy[i];
+        int arrCount = 0;
+        char* pch;
+        pch = strtok (line," ");
+        while(pch != NULL){
+        	printf("%s\n",pch );
+        	arrCount ++;
+        	pch = strtok (NULL, " ");
         }
+
+        printf("%s", llc);
+
+        int sortArray[arrCount];
+
+        pch = strtok (llc," ");
+        arrCount = 0;
+        while(pch != NULL){
+        	printf("%s\n",pch );
+        	sortArray[arrCount] = atoi(pch);
+        	printf("%d,",sortArray[arrCount]);
+        	arrCount ++;
+        	pch = strtok (NULL, " ");
+        }
+        
         printf("here is .........................................");
 
         //multithreaded merge sorting of sortArray
@@ -56,7 +72,7 @@ int main(int argc, char *argv[]){
         //threads are created by pthread_create function, we need to pass arguements tho this function of type void pointer
         //next step is to create two arguements to pass to each of thread
         
-        for(i=0; i<(sizeof(sortArray)/sizeof(sortArray[0]));i++)
+        for(i=0; i<arrCount;i++)
             printf("%d,",sortArray[i]);
         printf("here are...... .........................................");
         fLIndices args1, args2;
